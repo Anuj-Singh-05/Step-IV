@@ -1,0 +1,35 @@
+public class RiskThresholdSearch {
+    // Binary search for Floor and Ceiling [cite: 148, 152]
+    public static void findRiskBands(int[] sortedRisks, int target) {
+        int floor = -1, ceiling = -1;
+        int low = 0, high = sortedRisks.length - 1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (sortedRisks[mid] == target) {
+                floor = sortedRisks[mid];
+                ceiling = sortedRisks[mid];
+                break;
+            } else if (sortedRisks[mid] < target) {
+                floor = sortedRisks[mid]; // Current is a candidate for floor
+                low = mid + 1;
+            } else {
+                ceiling = sortedRisks[mid]; // Current is a candidate for ceiling
+                high = mid - 1;
+            }
+        }
+        System.out.println("Floor (Largest <= " + target + "): " + floor);
+        System.out.println("Ceiling (Smallest > " + target + "): " + ceiling);
+    }
+
+    // Binary search to find insertion point [cite: 147, 153]
+    public static int findInsertionPoint(int[] arr, int newClientRisk) {
+        int low = 0, high = arr.length - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            if (arr[mid] < newClientRisk) low = mid + 1;
+            else high = mid - 1;
+        }
+        return low; // This is the index where the new client should be inserted
+    }
+}
