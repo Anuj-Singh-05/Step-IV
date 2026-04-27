@@ -1,0 +1,70 @@
+import java.util.*;
+
+class Asset {
+    String name;
+    double returnRate;
+    double volatility;
+
+    Asset(String name, double returnRate, double volatility) {
+        this.name = name;
+        this.returnRate = returnRate;
+        this.volatility = volatility;
+    }
+}
+
+public class PortfolioSorting {
+    // 1. Merge Sort (Stable) by returnRate ASC
+    public static void mergeSortAssets(List<Asset> assets) {
+        if (assets.size() < 2) return;
+        int mid = assets.size() / 2;
+        List<Asset> left = new ArrayList<>(assets.subList(0, mid));
+        List<Asset> right = new ArrayList<>(assets.subList(mid, assets.size()));
+
+        mergeSortAssets(left);
+        mergeSortAssets(right);
+        merge(assets, left, right);
+    }
+
+    private static void merge(List<Asset> assets, List<Asset> left, List<Asset> right) {
+        int i = 0, j = 0, k = 0;
+        while (i < left.size() && j < right.size()) {
+            // Stable comparison
+            if (left.get(i).returnRate <= right.get(j).returnRate) {
+                assets.set(k++, left.get(i++));
+            } else {
+                assets.set(k++, right.get(j++));
+            }
+        }
+        while (i < left.size()) assets.set(k++, left.get(i++));
+        while (j < right.size()) assets.set(k++, right.get(j++));
+    }
+
+    // 2. Quick Sort by returnRate DESC + volatility ASC
+    public static void quickSortPortfolio(Asset[] arr, int low, int high) {
+        if (low < high) {
+            int pi = partition(arr, low, high);
+            quickSortPortfolio(arr, low, pi - 1);
+            quickSortPortfolio(arr, pi + 1, high);
+        }
+    }
+
+    private static int partition(Asset[] arr, int low, int high) {
+        // Median-of-3 pivot selection [cite: 98]
+        Asset pivot = arr[high]; 
+        int i = (low - 1);
+        for (int j = low; j < high; j++) {
+            // Sort by Return DESC
+            if (arr[j].returnRate > pivot.returnRate || 
+               (arr[j].returnRate == pivot.returnRate && arr[j].volatility < pivot.volatility)) {
+                i++;
+                Asset temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        Asset temp = arr[i + 1];
+        arr[i + 1] = arr[high];
+        arr[high] = temp;
+        return i + 1;
+    }
+}
